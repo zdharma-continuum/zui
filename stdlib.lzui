@@ -6,34 +6,39 @@
 
 # Available colors to embed in generated text
 #
-# Code is written as if *_E variables could be
-# different, but currently there's an obstacle
-# that allows only single common *_E value.
+# Allowed color values are \03..\20. Foregrond
+# colors are \03..\010, background: \011..\020
 #
-# Allowed color values are \03..\07.
-#
-# If the problem with common *_E will be fixed,
-# ZUI[COMMON_E] should be empty, so that code
-# detects that distinct *_E are used. That said,
-# this is apparently only an engineering ambition,
-# as common *_E values work fine :)
-ZUI[COMMON_E]=$'\037'       # octal value, decimal 31 - Unit separator
+# \01 and \02 are used for hyperlinks (buttons)
+
+
+ZUI[COLOR_END]=$'\037'      # octal value, decimal 31 - Unit separator
+
 ZUI[RED]=$'\07'             # Bell
-ZUI[RED_E]=$ZUI[COMMON_E]
 ZUI[GREEN]=$'\03'           # End of text
-ZUI[GREEN_E]=$ZUI[COMMON_E]
 ZUI[YELLOW]=$'\04'          # End of transmission
-ZUI[YELLOW_E]=$ZUI[COMMON_E]
 ZUI[MAGENTA]=$'\05'         # Enquiry
-ZUI[MAGENTA_E]=$ZUI[COMMON_E]
 ZUI[CYAN]=$'\06'            # Acknowledge
-ZUI[CYAN_E]=$ZUI[COMMON_E]
 ZUI[BLUE]=$'\010'           # Backspace
-ZUI[BLUE_E]=$ZUI[COMMON_E]
+
+# Background
+ZUI[BG_RED]=$'\011'             # Horizontal tab
+ZUI[BG_GREEN]=$'\013'           # Vertical tab
+ZUI[BG_YELLOW]=$'\014'          # Form feed
+ZUI[BG_MAGENTA]=$'\016'         # Shift out
+ZUI[BG_CYAN]=$'\017'            # Shift in
+ZUI[BG_BLUE]=$'\020'            # Data line escape
+
+# Used to connect foreground and background
+# colors (in that order)
+ZUI[PLUS]=$'\21'
+
+# Bold can be added to color
+ZUI[BOLD]=$'\022'               # Device control 1
 
 # Special code used to mark active button
-ZUI[MARK]=$'\026'           # octal value, decimal 22 - Synchronous idle
-ZUI[MARK_E]=$ZUI[COMMON_E]
+ZUI[MARK]=$'\026'               # octal value, decimal 22 - Synchronous idle
+ZUI[MARK_E]=$ZUI[COLOR_END]
 
 # Appends hyperlink into "reply" output array. It's the
 # standard action button, shown without surrounding

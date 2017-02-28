@@ -782,4 +782,13 @@ function -zui_stdlib_has_default_color() {
     return 1
 }
 
+# Appends given message to ZUI_MESSAGES
+#
+# $1 - message type
+# $2 - timestamp
+# $3, $4, ... - message bits / lines
+function -zui_stdlib_add_message() {
+    ZUI_MESSAGES+=( "${(j: :)${(q)@}}" )
+}
+
 # vim:ft=zsh

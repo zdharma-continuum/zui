@@ -189,7 +189,7 @@ local pure_text_selected
     handler="$ZUI[zuiiaction$id]"
     [[ -z "$handler" ]] && handler="$ZUI[zuiaction$id]"
 
-    reply=( "Id: $id" " ${__is_action-Index}: $data1" " $exint" " Handler:" " $handler" )
+    reply=( "Id: $id" " ${__is_action-Index}: $data1" " $exint" " Handler:" " $handler $handler $handler" )
 }
 
 #

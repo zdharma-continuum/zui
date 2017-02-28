@@ -1,0 +1,179 @@
+#
+# Prints log to given window
+#
+# $1 - window name
+# $2 - window height
+# $3 - window width
+# $4 - 0/1 if window has border
+# $5 - grep string
+# $6 - uniq mode 0/1
+# $7 - search mode 0/1
+# $8 - generation time
+# $9 - 0/1 if selectable
+# $10 - 0/1 if has search buffer
+# $11 - current index
+# $12 - last element
+
+# Outputs message in color, restores default color
+# $1 - color
+# $2 - text
+# $3 - line parameter name; line points at previous text
+# $4 - indentation
+# $5 - actual length of text in current line
+-zuilog_counted_msg() {
+    local color="$1" txt="$2" line_var="$3" indent="$4" actlen_var="$5"
+
+    [[ -z "$txt" ]] && return 1
+
+    [[ -n "$color" ]] && zcurses attr "$wname_status" "$color/$stbackground"
+
+    while (( ${(P)actlen_var} + ${#txt} > status_width - indent * 2 )); do
+        integer part_count=$(( (status_width - indent * 2) - ${(P)actlen_var} ))
+        zcurses string "$wname_status" "${txt[1,part_count]}"
+        : ${(P)line_var::=${(P)line_var}+1}
+        zcurses move "$wname_status" "${(P)line_var}" "$indent"
+        txt="${txt[part_count+1,-1]}"
+        : ${(P)actlen_var::=0}
+    done
+
+    if [[ -n "$txt" ]]; then
+        zcurses string "$wname_status" "$txt"
+        : ${(P)actlen_var::=${(P)actlen_var}+${#txt}}
+    else
+        # Curses cursor: right after text. Line number: at text.
+        # Both these situations are at some abstraction similar
+        : ${(P)line_var::=${(P)line_var}-1}
+    fi
+
+    [[ -n "$color" ]] && zcurses attr "$wname_status" "$stcolorpair"
+
+    return 0
+}
+
+# Outputs a message in the bottom of the screen
+# "[UNIQ]", "Text", "[Grep string]", "Generation time", "$reply[@]" from callback
+-zuilog_output_message() {
+    local direction="${1:-above}" gidx="$2" glast="$3" line_var="$4" entry="$5" txt
+    integer indent=2 msg_len=0 track_len=0 index=0
+
+    #
+    # Count
+    #
+
+    local -a elems
+    elems=( "${(@Q)${(z@)entry}}" )
+    shift 2 elems
+
+    for (( index = 1; index <= ${#elems[@]}; index ++ )); do
+        txt=${elems[index]/(#s)[[:space:]]##(#e)/}
+        elems[index]="$txt"
+        [[ -n "$txt" ]] && msg_len+=${#txt}
+    done
+
+    #
+    # Scroll
+    #
+
+    (( msg_len == 0 )) && return
+
+    if [[ "$direction" = "below" ]]; then
+        # Line is 0-based and it points to free line
+        echo "Doing __line=${(P)line_var}+$((((msg_len-1)/(win_width-2*indent))))" >> /tmp/reply
+        integer __line="${(P)line_var}"+$(( (msg_len-1)/(win_width-2*indent) ))
+        integer __scroll=__line+1-$(( win_height-win_border*2 ))
+        echo "__scroll is $__scroll" >> /tmp/reply
+        if (( __scroll > 0 )); then
+            (( __line= __line - __scroll ))
+            zcurses scroll "$window" +$__scroll
+            : ${(P)line_var::=${(P)line_var}-$__scroll}
+        fi
+    elif [[ "$direction" = "above" ]]; then
+        integer __scroll=1+((msg_len-1)/(win_width-2*indent))
+        zcurses scroll "$window" -$__scroll
+    fi
+
+    zcurses move "$window" "${(P)line_var}" $indent
+
+    #
+    # Print
+    #
+
+    if [[ "$gidx" = "$glast" ]]; then
+    fi
+
+    index=0
+    local -a col
+    col=( cyan green red magenta yellow blue )
+
+    for txt in "${elems[@]}"; do
+        (( ++ index ))
+        [[ -n "$txt" ]] && -zuilog_counted_msg "${col[index]}" "$txt" "$line_var" $indent track_len
+    done
+}
+
+local window="$1"
+integer win_height="$2"
+integer win_width="$3"
+integer win_border="$4"
+local grep_string="$5"
+integer uniq="$6"
+integer search="$7"
+local generation_time="$8"
+integer selectable="$9"
+integer search_buf="$10"
+integer idx="$11"
+integer last_element="$12"
+
+local _uniq="" _text="" _grep="" _gen=""
+(( uniq )) && _uniq="[-UNIQ-]"
+[[ -n "$grep_string" ]] && _grep="[$ZUILIST_GREP_STRING]"
+[[ -n "$generation_time" ]] && _gen="GENERATED IN ${generation_time}s"
+
+(( selectable + search_buf + uniq )) && _text="Current #$idx (of #$last_element entries)"
+
+integer last="${#ZUI_MESSAGES[@]}" start=last-win_height+win_border line=stborder
+(( start <= 0 )) && start=1
+
+zcurses clear "$window"
+
+ZUI[log_scroll]="below"
+ZUI[status_pointer]=0
+
+echo "---------------------- BEGIN ----------------------" >> /tmp/reply
+local entry 
+for entry in "${(@)ZUI_MESSAGES[start,last]}"; do
+    echo "Outputting [line: $line]: $entry" >> /tmp/reply
+    -zuilog_output_message "${ZUI[log_scroll]}" "$start" "$last" "line" "$entry"
+    (( ++ start ))
+
+    #
+    # Here is where "${ZUI[log_scroll]}" = "below" condition doesn't fire
+    #
+
+    echo "Non-bumped line[${ZUI[log_scroll]}]: $line" >> /tmp/reply
+    [[ "${ZUI[log_scroll]}" = "below" ]] && (( line ++ )) || (( line = stborder ))
+    echo "Bumped line: $line" >> /tmp/reply
+done
+
+
+if [[ "${ZUI[status_pointer]}" = "1" ]]; then
+    [[ "${ZUI[log_scroll]}" = "above" || "$(( win_height-stborder ))" > "$line" ]] && zcurses scroll "$window" -1
+
+    zcurses move "$window" 0 2
+    zcurses clear "$window" eol
+
+    local track_len=0
+    line=0
+
+    [[ -n "$_gen" ]] && {
+        -zuilog_counted_msg "yellow" "$_gen " line 2 track_len
+        _uniq=0 _text=0 _grep=0
+    }
+
+    for txt in $_uniq $_text $_grep; do
+        -zuilog_counted_msg "" "$txt " line 2 track_len
+    done
+
+    (( line ++ ))
+fi
+# vim:ft=zsh

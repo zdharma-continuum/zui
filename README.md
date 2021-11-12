@@ -1,4 +1,4 @@
-![ZUI logo](https://raw.githubusercontent.com/wiki/zdharma/zui/img/zui_logo-fs8.png)
+![ZUI logo](https://raw.githubusercontent.com/wiki/zdharma-continuum/zui/img/zui_logo-fs8.png)
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D6XDCHDSBDSDG)
 
@@ -8,7 +8,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](./LICENSE)
 ![ZSH 4.3.17](https://img.shields.io/badge/zsh-v4.3.17-orange.svg?style=flat-square)
 
-![Dharma logos](https://raw.githubusercontent.com/wiki/zdharma/zui/img/logo_theme-fs8.png)
+![Dharma logos](https://raw.githubusercontent.com/wiki/zdharma-continuum/zui/img/logo_theme-fs8.png)
 
 This is a RAD (Rapid Application Development) textual user interface library for Zsh. It in many aspects resembles typical CGI+(D)HTML setup. There are:
 
@@ -48,12 +48,12 @@ zui-event-loop 1:demo_generator_A
 -zui_std_cleanup serialize
 ```
 
-![Hello World screenshot](https://raw.githubusercontent.com/wiki/zdharma/zui/img/hello-world-fs8.png)
+![Hello World screenshot](https://raw.githubusercontent.com/wiki/zdharma-continuum/zui/img/hello-world-fs8.png)
 
-Other example which uses list-box: [zui-demo-list-box](https://github.com/zdharma/zui/blob/master/demos/zui-demo-list-boxes)
+Other example which uses list-box: [zui-demo-list-box](https://github.com/zdharma-continuum/zui/blob/master/demos/zui-demo-list-boxes)
 
-The API is described at the [wiki](https://github.com/zdharma/zui/wiki). Checkout [screenshots](https://github.com/zdharma/zui/wiki/Screenshots)
-and [Asciinema recordings](https://github.com/zdharma/zui/wiki/Asciinema).
+The API is described at the [wiki](https://github.com/zdharma-continuum/zui/wiki). Checkout [screenshots](https://github.com/zdharma-continuum/zui/wiki/Screenshots)
+and [Asciinema recordings](https://github.com/zdharma-continuum/zui/wiki/Asciinema).
 
 ## Installation
 
@@ -66,28 +66,28 @@ source {where-zui-is}/zui.plugin.zsh
 
 to `zshrc`.
 
-If using a plugin manager, then `Zplugin` is recommended, but you can use any
+If using a plugin manager, then `Zinit` is recommended, but you can use any
 other too, and also install with `Oh My Zsh` (by copying directory to
 `~/.oh-my-zsh/custom/plugins`).
 
-### Zplugin
+### Zinit
 
-Add `zplugin load zdharma/zui` to your `.zshrc` file. Zplugin will handle
+Add `zinit load zdharma-continuum/zui` to your `.zshrc` file. Zinit will handle
 cloning the plugin for you automatically the next time you start zsh. To update
-(i.e. to pull from origin) issue `zplugin update zdharma/zui`.
+(i.e. to pull from origin) issue `zinit update zdharma-continuum/zui`.
 
 ### Antigen
 
-Add `antigen bundle zdharma/zui` to your `.zshrc` file. Antigen will handle
+Add `antigen bundle zdharma-continuum/zui` to your `.zshrc` file. Antigen will handle
 cloning the plugin for you automatically the next time you start zsh.
 
 ### Oh-My-Zsh
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
-2. `git clone git@github.com:zdharma/zui.git`
+2. `git clone git@github.com:zdharma-continuum/zui.git`
 3. Add `zui` to your plugin list
 
 ### Zgen
 
-Add `zgen load zdharma/zui` to your .zshrc file in the same place you're doing
+Add `zgen load zdharma-continuum/zui` to your .zshrc file in the same place you're doing
 your other `zgen load` calls in.
